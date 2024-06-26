@@ -5,22 +5,14 @@ const post = () => async (req, res, next) => {
     const { query } = req;
     const { body } = req;
     const { component } = query;
-    const { event_type, object_attributes, user } = body;
+    const { pull_request } = body;
+    const { merged_by: user, merge_commit_sha, merged, title } = pull_request;
 
-    if (event_type !== 'merge_request') {
+    if (!merged) {
       console.log('Ignoring GitLab webhook');
       res.json({ message: 'Ignoring GitLab webhook' });
       return;
     }
-
-    if (object_attributes.state !== 'merged') {
-      console.log('Ignoring GitLab webhook');
-      res.json({ message: 'Ignoring GitLab webhook' });
-      return;
-    }
-
-    // get title and description from merge request
-    const { title, merge_commit_sha } = object_attributes;
 
     // extract id from title
     const matches = title.match(/\[.*#(\d+)\]/);
@@ -31,7 +23,7 @@ const post = () => async (req, res, next) => {
 
     const [_, id] = matches;
 
-    const notes = `Merge SHA: ${merge_commit_sha}\nMerge Title: ${title}\nAuthor: ${user.name}\nComponent: ${component}`;
+    const notes = `Merge SHA: ${merge_commit_sha}\nMerge Title: ${title}\nAuthor: ${user.login}\nComponent: ${component}`;
 
     // update issue with merge request details
     await redmine.issues.update(id, { notes });
