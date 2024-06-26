@@ -9,6 +9,13 @@ const post = () => async (req, res, next) => {
     const { body } = req;
     const { component } = query;
     const { pull_request } = body;
+
+    if (!pull_request) {
+      logger.info(`Body does not contain pull_request. Ignoring GitHub webhook`);
+      res.json({ message: 'Ignoring GitLab webhook' });
+      return;
+    }
+
     const { merged_by: user, merge_commit_sha, merged, title } = pull_request;
 
     if (!merged) {
