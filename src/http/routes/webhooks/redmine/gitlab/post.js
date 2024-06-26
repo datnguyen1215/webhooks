@@ -1,17 +1,7 @@
 import redmine from '@src/redmine';
+import logging from '@src/logging';
 
-const update_issue = async (id, data) => {
-  return new Promise((resolve, reject) => {
-    redmine.update_issue(id, data, (err, data) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      resolve(data);
-    });
-  });
-};
+const logger = logging.create('webhooks:redmine:gitlab:post');
 
 const post = () => async (req, res, next) => {
   try {
@@ -21,13 +11,13 @@ const post = () => async (req, res, next) => {
     const { event_type, object_attributes, user } = body;
 
     if (event_type !== 'merge_request') {
-      console.log('Ignoring GitLab webhook');
+      logger.info(`Event type is not merge_request. Ignoring GitLab webhook`);
       res.json({ message: 'Ignoring GitLab webhook' });
       return;
     }
 
     if (object_attributes.state !== 'merged') {
-      console.log('Ignoring GitLab webhook');
+      logger.info(`Merge request is not merged. Ignoring GitLab webhook`);
       res.json({ message: 'Ignoring GitLab webhook' });
       return;
     }
@@ -38,6 +28,7 @@ const post = () => async (req, res, next) => {
     // extract id from title
     const matches = title.match(/\[.*#(\d+)\]/);
     if (!matches) {
+      logger.info(`Title does not contain issue ID: ${title}. Ignoring GitLab webhook`);
       res.json({ message: 'Ignoring GitLab webhook' });
       return;
     }
