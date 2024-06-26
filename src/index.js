@@ -1,12 +1,9 @@
-import "./aliases";
-import settings from "./settings";
-import db from "./db";
+import './aliases';
+import settings from './settings';
+import http from './http';
 
 (async () => {
-  console.log(`Settings: ${JSON.stringify(settings)}`);
+  console.log(`Settings: ${JSON.stringify(settings.get())}`);
 
-  const result = await db.query("SELECT CURRENT_DATE");
-  console.log(result.rows);
-
-  db.pool.end();
+  await http.server.start();
 })();
