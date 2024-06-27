@@ -28,6 +28,9 @@ const get = () => {
     },
     http: {
       port: process.env.HTTP_PORT
+    },
+    gitlab: {
+      access_token: process.env.GITLAB_ACCESS_TOKEN
     }
   };
 };
