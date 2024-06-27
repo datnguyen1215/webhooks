@@ -22,6 +22,10 @@ const get = () => {
     gitlab: {
       access_token: process.env.GITLAB_ACCESS_TOKEN,
       url: process.env.GITLAB_URL
+    },
+    github: {
+      access_token: process.env.GITHUB_ACCESS_TOKEN,
+      url: process.env.GITHUB_URL
     }
   };
 };

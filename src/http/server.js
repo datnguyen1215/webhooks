@@ -27,7 +27,7 @@ app.use((err, _req, res, _next) => {
 
   if (err.cause?.status) res = res.status(err.cause.status);
 
-  res.json({ error: { message: err.message, ...err.cause } });
+  res.status(500).json({ error: { message: err.message, ...err.cause } });
 });
 
 /**
