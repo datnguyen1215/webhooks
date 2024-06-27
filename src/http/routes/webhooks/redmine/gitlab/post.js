@@ -27,14 +27,14 @@ const post = () => async (req, res, next) => {
     const { event_type, object_attributes, user, project } = body;
 
     if (event_type !== 'merge_request') {
-      logger.info(`Event type is not merge_request. Ignoring GitLab webhook`);
-      res.json({ message: 'Ignoring GitLab webhook' });
+      logger.warn(`Event type is not merge_request. Ignoring GitLab webhook`);
+      res.status(400).json({ message: 'Ignoring GitLab webhook' });
       return;
     }
 
     if (object_attributes.state !== 'merged') {
-      logger.info(`Merge request is not merged. Ignoring GitLab webhook`);
-      res.json({ message: 'Ignoring GitLab webhook' });
+      logger.warn(`Merge request is not merged. Ignoring GitLab webhook`);
+      res.status(400).json({ message: 'Ignoring GitLab webhook' });
       return;
     }
 
@@ -44,17 +44,15 @@ const post = () => async (req, res, next) => {
     // extract id from title
     const matches = title.match(/\[.*#(\d+)\]/);
     if (!matches) {
-      logger.info(`Title does not contain issue ID: ${title}. Ignoring GitLab webhook`);
-      res.json({ message: 'Ignoring GitLab webhook' });
+      logger.warn(`Title does not contain issue ID: ${title}. Ignoring GitLab webhook`);
+      res.status(400).json({ message: 'Ignoring GitLab webhook' });
       return;
     }
 
     const [_, issue_id] = matches;
 
-    logger.info(`Commits from merge request: ${merge_commit_sha}`);
-
+    logger.info(`Getting commits from merge request: ${object_attributes.iid}`);
     const commits = await gitlab.merge.commits(project.id, object_attributes.iid);
-    logger.info(`Commits from merge request: ${JSON.stringify(commits)}`);
 
     const tags = await gitlab.tags(project.id);
     // get the first tag
