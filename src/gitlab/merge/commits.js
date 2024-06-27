@@ -20,7 +20,7 @@ const commits = async (projectId, mergeRequestId) => {
   });
 
   const resp = await axios.get(
-    `https://sbwdlab.screenbeam.com:8888/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/commits`,
+    `${config.redmine.url}/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/commits`,
     {
       headers,
       httpsAgent: agent

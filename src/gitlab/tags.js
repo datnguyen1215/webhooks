@@ -14,7 +14,7 @@ const tags = async projectId => {
   });
 
   const resp = await axios.get(
-    `https://sbwdlab.screenbeam.com:8888/api/v4/projects/${projectId}/repository/tags`,
+    `${config.redmine.url}/api/v4/projects/${projectId}/repository/tags`,
     {
       headers,
       httpsAgent: agent
