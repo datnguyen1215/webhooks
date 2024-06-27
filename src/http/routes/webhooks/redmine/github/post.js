@@ -82,7 +82,7 @@ const post = () => async (req, res, next) => {
     logger.info(`Notes: \n${notes}`);
 
     // update issue with merge request details
-    // await redmine.issues.update(id, { notes });
+    await redmine.issues.update(id, { notes });
 
     logger.info(`Redmine issue #${id} updated`);
     res.json({ message: 'Redmine issue updated' });
