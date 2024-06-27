@@ -11,6 +11,12 @@ const config = settings.get();
  * @returns
  */
 const commits = async (projectId, mergeRequestId) => {
+  if (!config.gitlab.access_token)
+    throw new Error('', { cause: { code: 'MISSING_ENV', name: 'GITLAB_ACCESS_TOKEN' } });
+
+  if (!config.gitlab.url)
+    throw new Error('', { cause: { code: 'MISSING_ENV', name: 'GITLAB_URL' } });
+
   const headers = {
     'PRIVATE-TOKEN': config.gitlab.access_token
   };
@@ -20,7 +26,7 @@ const commits = async (projectId, mergeRequestId) => {
   });
 
   const resp = await axios.get(
-    `${config.redmine.url}/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/commits`,
+    `${config.gitlab.url}/api/v4/projects/${projectId}/merge_requests/${mergeRequestId}/commits`,
     {
       headers,
       httpsAgent: agent
