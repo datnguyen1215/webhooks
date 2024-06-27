@@ -36,7 +36,6 @@ const post = () => async (req, res, next) => {
 
     const notes = `Merge SHA: ${merge_commit_sha}\nMerge Title: ${title}\nAuthor: ${user.login}\nComponent: ${component}`;
 
-
     // update issue with merge request details
     await redmine.issues.update(id, { notes });
 
