@@ -1,14 +1,30 @@
+import gitlab from '@src/gitlab';
 import redmine from '@src/redmine';
 import logging from '@src/logging';
 
 const logger = logging.create('webhooks:redmine:gitlab:post');
+
+const newTag = previousTag => {
+  if (!previousTag) return '';
+
+  previousTag = previousTag.split('/')[1];
+
+  // get the last number
+  const tag = previousTag?.match(/\d+$/)[0];
+
+  const newTag = parseInt(tag) + 1;
+
+  // append the new tag to the previous tag
+  const newTagString = previousTag?.replace(/\d+$/, newTag);
+  return newTagString;
+};
 
 const post = () => async (req, res, next) => {
   try {
     const { query } = req;
     const { body } = req;
     const { component } = query;
-    const { event_type, object_attributes, user } = body;
+    const { event_type, object_attributes, user, project } = body;
 
     if (event_type !== 'merge_request') {
       logger.info(`Event type is not merge_request. Ignoring GitLab webhook`);
@@ -33,12 +49,29 @@ const post = () => async (req, res, next) => {
       return;
     }
 
-    const [_, id] = matches;
+    const [_, issue_id] = matches;
 
-    const notes = `Merge SHA: ${merge_commit_sha}\nMerge Title: ${title}\nAuthor: ${user.name}\nComponent: ${component}`;
+    logger.info(`Commits from merge request: ${merge_commit_sha}`);
+
+    const commits = await gitlab.merge.commits(project.id, object_attributes.iid);
+    logger.info(`Commits from merge request: ${JSON.stringify(commits)}`);
+
+    const tags = await gitlab.tags(project.id);
+    // get the first tag
+
+    const tag = newTag(tags[0].name);
+
+    const notes =
+      `Merge SHA: ${merge_commit_sha}\n` +
+      `Changes:\n` +
+      commits.map(commit => `>  - ${commit.message}`).join('') +
+      `Author: ${user.name}\n` +
+      `Component: ${component} ${tag}`;
+
+    logger.info('Notes: \n' + notes);
 
     // update issue with merge request details
-    await redmine.issues.update(id, { notes });
+    await redmine.issues.update(issue_id, { notes });
 
     res.json({ message: 'Redmine issue updated' });
   } catch (err) {
