@@ -7,7 +7,8 @@ const logger = logging.create('webhooks:redmine:github:post');
 const newTag = previousTag => {
   if (!previousTag) return '';
 
-  previousTag = previousTag.split('/')[1];
+  const splitted = previousTag.split('/');
+  previousTag = splitted[splitted.length - 1];
 
   // get the last number
   const tag = previousTag?.match(/\d+$/)[0];
@@ -62,10 +63,14 @@ const post = () => async (req, res, next) => {
       owner: repository.owner.login,
       repo: repository.name
     });
+    console.log(tags);
 
     // get the last tag
-    const lastTag = tags[tags.length - 1]?.ref;
+    const lastTag = tags[tags.length - 1]?.name;
+    logger.info(`Last tag: ${lastTag}`);
+
     const newtag = newTag(lastTag);
+    logger.info(`New tag: ${newtag}`);
 
     const notes =
       `Merge SHA: ${merge_commit_sha}\n` +
@@ -77,7 +82,7 @@ const post = () => async (req, res, next) => {
     logger.info(`Notes: \n${notes}`);
 
     // update issue with merge request details
-    await redmine.issues.update(id, { notes });
+    // await redmine.issues.update(id, { notes });
 
     logger.info(`Redmine issue #${id} updated`);
     res.json({ message: 'Redmine issue updated' });
