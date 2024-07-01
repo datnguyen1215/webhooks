@@ -19,7 +19,9 @@ app.use('*', (req, _res, next) => {
   );
   next();
 });
+
 app.use('/webhooks', routes.webhooks());
+app.get('/health', routes.health());
 
 // catchall error handler in case an error is thrown in the request pipeline
 app.use((err, _req, res, _next) => {
