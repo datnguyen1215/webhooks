@@ -5,15 +5,16 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
+    "build": "babel src -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.24.7",
     "@babel/core": "^7.23.9",
     "@babel/node": "^7.23.9",
     "@babel/preset-env": "^7.23.9",
-    "expressjs": "^1.0.1",
     "nodemon": "^3.0.3"
   },
   "dependencies": {
