@@ -21,10 +21,12 @@ permissions:
   packages: write
 
 env:
-  APP_NAME: webhooks
+  AWS_REGION: us-west-1
+  CONTAINER_NAME: webhooks
   ECS_TASK_DEFINITION: .aws/task-definitions/deploy.json
   ECS_SERVICE: screenbeamcloud-development-o8-backend-service # set this to your Amazon ECS service name
   ECS_CLUSTER: webhooks-cluster
+  ECR_REPOSITORY: webhooks
 
 jobs:
   deploy:
@@ -33,22 +35,22 @@ jobs:
     environment: production
 
     steps:
-      - name: Checkout repository code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3 #Login using roles with identity provider and roles
+        uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
         with:
-          role-to-assume: arn:aws:iam::288978010356:role/github-actions-role
-          role-session-name: githubrolesession
-          aws-region: us-west-1
+          role-to-assume: arn:aws:iam::288978010356:role/GitHubAction-AssumeRoleWithAction
+          role-session-name: GitHubAction
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
 
       - name: Build, tag, and push backend image to Amazon ECR
-        id: build-backend-image
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
@@ -57,21 +59,21 @@ jobs:
           # push it to ECR so that it can
           # be deployed to ECS.
 
-          docker build -t $ECR_REGISTRY/$APP_NAME:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$APP_NAME:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$APP_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.APP_NAME }}
-          image: ${{ steps.build-backend-image.outputs.image }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
           environment-variables: 'VERSION=${{ github.sha }}'
 
       - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
