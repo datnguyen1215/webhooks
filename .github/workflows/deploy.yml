@@ -24,7 +24,7 @@ env:
   AWS_REGION: us-west-1
   CONTAINER_NAME: webhooks
   ECS_TASK_DEFINITION: .aws/task-definitions/deploy.json
-  ECS_SERVICE: screenbeamcloud-development-o8-backend-service # set this to your Amazon ECS service name
+  ECS_SERVICE: webhooks-service
   ECS_CLUSTER: webhooks-cluster
   ECR_REPOSITORY: webhooks
 
