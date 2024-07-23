@@ -20,13 +20,13 @@ jobs:
 
       - name: Set Vercel Environment Variables
         run: |
-          vercel env add HTTP_PORT ${{ secrets.HTTP_PORT }} production --token ${{ secrets.VERCEL_TOKEN }}
-          vercel env add REDMINE_URL ${{ secrets.REDMINE_URL }} production --token ${{ secrets.VERCEL_TOKEN }}
-          vercel env add REDMINE_API_KEY ${{ secrets.REDMINE_API_KEY }} production --token ${{ secrets.VERCEL_TOKEN }}
-          vercel env add GITLAB_URL ${{ secrets.GITLAB_URL }} production --token ${{ secrets.VERCEL_TOKEN }}
-          vercel env add GITLAB_API_KEY ${{ secrets.GITLAB_API_KEY }} production --token ${{ secrets.VERCEL_TOKEN }}
-          vercel env add GITHUB_URL ${{ secrets.GH_URL }} production --token ${{ secrets.VERCEL_TOKEN }}
-          vercel env add GITHUB_API_KEY ${{ secrets.GH_API_KEY }} production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add HTTP_PORT ${{ secrets.HTTP_PORT }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add REDMINE_URL ${{ secrets.REDMINE_URL }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add REDMINE_API_KEY ${{ secrets.REDMINE_API_KEY }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add GITLAB_URL ${{ secrets.GITLAB_URL }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add GITLAB_API_KEY ${{ secrets.GITLAB_API_KEY }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add GITHUB_URL ${{ secrets.GH_URL }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add GITHUB_API_KEY ${{ secrets.GH_API_KEY }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
