@@ -12,6 +12,6 @@ RUN npm run build
 
 USER node
 
-EXPOSE 80
+EXPOSE 9356
 
 CMD ["pm2-runtime", "dist/index.js"]
