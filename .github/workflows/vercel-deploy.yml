@@ -20,7 +20,7 @@ jobs:
 
       - name: Set Vercel Environment Variables
         run: |
-          vercel env add HTTP_PORT ${{ secrets.HTTP_PORT }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add HTTP_PORT ${{ env.HTTP_PORT }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
           vercel env add REDMINE_URL ${{ secrets.REDMINE_URL }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
           vercel env add REDMINE_API_KEY ${{ secrets.REDMINE_API_KEY }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
           vercel env add GITLAB_URL ${{ secrets.GITLAB_URL }} --environment=production --token ${{ secrets.VERCEL_TOKEN }}
