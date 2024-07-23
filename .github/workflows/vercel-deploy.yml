@@ -11,20 +11,28 @@ jobs:
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      HTTP_PORT: 80
-      REDMINE_URL: ${{ secrets.REDMINE_URL }}
-      REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }}
-      GITLAB_URL: ${{ secrets.GITLAB_URL }}
-      GITLAB_API_KEY: ${{ secrets.GITLAB_API_KEY }}
-      GITHUB_URL: ${{ secrets.GH_URL }}
-      GITHUB_API_KEY: ${{ secrets.GH_API_KEY }}
+
     steps:
       - uses: actions/checkout@v2
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+
+      - name: Set Vercel Environment Variables
+        run: |
+          vercel env add HTTP_PORT ${{ secrets.HTTP_PORT }} production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add REDMINE_URL ${{ secrets.REDMINE_URL }} production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add REDMINE_API_KEY ${{ secrets.REDMINE_API_KEY }} production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add GITLAB_URL ${{ secrets.GITLAB_URL }} production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add GITLAB_API_KEY ${{ secrets.GITLAB_API_KEY }} production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add GITHUB_URL ${{ secrets.GH_URL }} production --token ${{ secrets.VERCEL_TOKEN }}
+          vercel env add GITHUB_API_KEY ${{ secrets.GH_API_KEY }} production --token ${{ secrets.VERCEL_TOKEN }}
+
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
