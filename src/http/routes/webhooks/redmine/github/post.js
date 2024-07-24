@@ -63,10 +63,9 @@ const post = () => async (req, res, next) => {
       owner: repository.owner.login,
       repo: repository.name
     });
-    console.log(tags);
 
     // get the last tag
-    const lastTag = tags[tags.length - 1]?.name;
+    const lastTag = tags[0]?.name;
     logger.info(`Last tag: ${lastTag}`);
 
     const newtag = newTag(lastTag);
