@@ -1,2 +1,3 @@
-import commits from "./commits";
-export default { commits };
+import commits from './commits';
+import files from './files';
+export default { commits, files };
